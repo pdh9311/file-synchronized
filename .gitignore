@@ -1,4 +1,4 @@
 .idea/**
 META-INF/**
-out/production/**
+out/**
 *.iml

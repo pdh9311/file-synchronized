@@ -154,7 +154,7 @@ public class Client {
                     }
 
                 }
-                System.out.println("Thread 종료 " + Thread.currentThread().getName());
+                // System.out.println("Thread 종료 " + Thread.currentThread().getName());
             } catch (IOException | ParseException e) {
                 throw new RuntimeException(e);
             }

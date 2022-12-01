@@ -44,36 +44,11 @@ public class Client {
                 Map<String, SyncFileInfo> currMap = search.getClientSyncFileInfos();
 
                 // prevMap 반복하면서 key값으로 currMap에서 찾는데 null이면 삭제된 파일 찾기.
-                Map<String, SyncFileInfo> tempMap = Map.copyOf(prevMap);
-                for (Map.Entry<String, SyncFileInfo> entry : tempMap.entrySet()) {
-                    String key = entry.getKey();
-                    SyncFileInfo value = entry.getValue();
-                    SyncFileInfo info = currMap.get(key);
-                    if (info == null) {     // 삭제된 파일
-                        System.out.println("[삭제된 파일] " + Const.SYNC_PATH + value.getPath());
-                        Utils.sendMsg(socket, value.toJson("DELETE"));
-                        prevMap.remove(key);
-                    }
-                }
+                findDeletedFile(socket, currMap);
 
                 // currMap 반복하면서 key값으로 prevMap에서 찾는데 null이면 추가된 파일 찾기.
                 // currMap 반복하면서 key값으로 마지막 수정일을 비교해서 변경된 파일 찾기.
-                for (Map.Entry<String, SyncFileInfo> entry : currMap.entrySet()) {
-                    String key = entry.getKey();
-                    SyncFileInfo value = entry.getValue();
-                    SyncFileInfo info = prevMap.get(key);
-                    if (info == null) {     // 추가된 파일
-                        System.out.println("[추가된 파일] " + Const.SYNC_PATH + value.getPath());
-                        Utils.sendMsg(socket, value.toJson("ADD"));
-                        Utils.sendFile(socket, Utils.findFileAtClient(value.getPath()));
-                        prevMap.put(key, value);
-                    } else if (value.isModified(info)) {    // 변경된 파일
-                        System.out.println("[변경된 파일] " + Const.SYNC_PATH + value.getPath());
-                        Utils.sendMsg(socket, value.toJson("MODIFY"));
-                        Utils.sendFile(socket, Utils.findFileAtClient(value.getPath()));
-                        prevMap.put(key, value);
-                    }
-                }
+                findAddModifyFile(socket, currMap);
 
             }
         } catch (Exception e) {
@@ -87,6 +62,39 @@ public class Client {
             }
         }
 
+    }
+
+    private static void findAddModifyFile(Socket socket, Map<String, SyncFileInfo> currMap) throws IOException {
+        for (Map.Entry<String, SyncFileInfo> entry : currMap.entrySet()) {
+            String key = entry.getKey();
+            SyncFileInfo value = entry.getValue();
+            SyncFileInfo info = prevMap.get(key);
+            if (info == null) {     // 추가된 파일
+                System.out.println("[추가된 파일] " + Const.SYNC_PATH + value.getPath());
+                Utils.sendMsg(socket, value.toJson("ADD"));
+                Utils.sendFile(socket, Utils.findFileAtClient(value.getPath()));
+                prevMap.put(key, value);
+            } else if (value.isModified(info)) {    // 변경된 파일
+                System.out.println("[변경된 파일] " + Const.SYNC_PATH + value.getPath());
+                Utils.sendMsg(socket, value.toJson("MODIFY"));
+                Utils.sendFile(socket, Utils.findFileAtClient(value.getPath()));
+                prevMap.put(key, value);
+            }
+        }
+    }
+
+    private static void findDeletedFile(Socket socket, Map<String, SyncFileInfo> currMap) throws IOException {
+        Map<String, SyncFileInfo> tempMap = Map.copyOf(prevMap);
+        for (Map.Entry<String, SyncFileInfo> entry : tempMap.entrySet()) {
+            String key = entry.getKey();
+            SyncFileInfo value = entry.getValue();
+            SyncFileInfo info = currMap.get(key);
+            if (info == null) {     // 삭제된 파일
+                System.out.println("[삭제된 파일] " + Const.SYNC_PATH + value.getPath());
+                Utils.sendMsg(socket, value.toJson("DELETE"));
+                prevMap.remove(key);
+            }
+        }
     }
 
     private static void clientFileCheck(Socket socket, Map<String, SyncFileInfo> serverMap) throws IOException {

@@ -35,7 +35,6 @@ public class Utils {
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
         byte[] data = new byte[2048];
-        Arrays.fill(data, (byte) 0);
         int len;
         while ((len = bis.read(data)) != -1) {
             dos.writeInt(len);              // 읽은 바이트 길이
@@ -52,9 +51,8 @@ public class Utils {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
         byte[] data = new byte[2048];
-        Arrays.fill(data, (byte) 0);
         int len;
-        while ((len = dis.readInt()) != -1) {
+        while ((len = dis.readInt()) != -1) {       // 읽은 바이트 길이
             dis.read(data, 0, len);
             bos.write(data, 0, len);
             bos.flush();

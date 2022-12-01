@@ -47,6 +47,7 @@ public class Server {
             }
         } catch (IOException | InterruptedException e) {
             System.out.println("[예외 발생] " + e.getMessage());
+            e.printStackTrace();
         }
 
 
@@ -90,6 +91,7 @@ public class Server {
                 }
             } catch (Exception e) {
                 System.out.println("[예외 발생] " + e.getMessage());
+                e.printStackTrace();
             } finally {
                 try {
                     Print.stopWithClient(socket);

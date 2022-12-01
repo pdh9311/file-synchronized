@@ -6,14 +6,11 @@ import java.net.Socket;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Server {
     private static Map<String, SyncFileInfo> prevMap = new HashMap<>();
 
     private static ServerSocket serverSocket;
-    private static ExecutorService executorService;
 
     public static void main(String[] args) {
         try {
@@ -21,7 +18,6 @@ public class Server {
         } catch (IOException e) {
             System.out.println("[" + Const.SERVER_PORT + " 포트에 연결할 수 없습니다.]");
         }
-        executorService = Executors.newFixedThreadPool(10);
         System.out.println("[server] 시작");
         try {
             while (true) {
@@ -30,37 +26,29 @@ public class Server {
 
                 Print.serverAccept(socket);
 
-                executorService.execute(() -> {
-                    try {
-                        // 특정 디렉토리 : ~/backup
-                        AllFileDirSearch search = new AllFileDirSearch(Const.SERVER_SYNC_DIR);
-                        prevMap = search.getClientSyncFileInfos();
-                        Print.MapStringSyncFileInfo(prevMap);
+                // 특정 디렉토리 : ~/backup
+                AllFileDirSearch search = new AllFileDirSearch(Const.SERVER_SYNC_DIR);
+                prevMap = search.getClientSyncFileInfos();
+                Print.MapStringSyncFileInfo(prevMap);
 
-                        // 처음 서버에 backup 되어있는 파일들의 정보를 클라이언트한테 보낸다.
-                        Utils.sendMapStringSyncFileInfo(socket, prevMap);
+                // 처음 서버에 backup 되어있는 파일들의 정보를 클라이언트한테 보낸다.
+                Utils.sendMapStringSyncFileInfo(socket, prevMap);
 
-                        // 클라이언트의 현재 sync 되어있는 파일들의 정보를 가져온다.
-                        Map<String, SyncFileInfo> clientMap = Utils.recvMapStringSyncFileInfo(socket);
+                // 클라이언트의 현재 sync 되어있는 파일들의 정보를 가져온다.
+                Map<String, SyncFileInfo> clientMap = Utils.recvMapStringSyncFileInfo(socket);
 
-                        // 클라이언트로 부터 추가, 변경, 삭제에 대한 요청 감지
-                        Thread thread = eventHandler(socket);
+                // 클라이언트로 부터 추가, 변경, 삭제에 대한 요청 감지
+                Thread thread = eventHandler(socket);
 
-                        serverFileCheck(socket, clientMap);
-                        Utils.sendMsg(socket, "END");
-                        thread.join();
+                serverFileCheck(socket, clientMap);
+                Utils.sendMsg(socket, "END");
+                thread.join();
 
-                    } catch (IOException | InterruptedException e) {
-                        System.out.println("[예외 발생] " + e.getMessage());
-                    }
-                });
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            executorService.shutdown();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("[예외 발생] " + e.getMessage());
         }
+
 
     }
 
@@ -124,6 +112,7 @@ public class Server {
         Utils.setLastModifiedDate(sfi.getLastModifiedDate(), file);
         prevMap.put(sfi.getPath(), sfi);
     }
+
     private static void fileModify(Socket socket, SyncFileInfo sfi) throws IOException, ParseException {
         System.out.println("---------- MODIFY ----------");
         System.out.println("file: " + Const.BACKUP_PATH + sfi.getPath());

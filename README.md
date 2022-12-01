@@ -6,6 +6,6 @@
 - 클라이언트 실행 방법 : `java -jar out/artifacts/client.jar`
 
 ## Server 순서도
-![](server-diagram.svg)
+![](image/server-diagram.svg)
 ## Client 순서도
-![](client-diagram.svg)
+![](image/client-diagram.svg)

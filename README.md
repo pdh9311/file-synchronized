@@ -4,3 +4,8 @@
 ## 실행방법
 - 서버 실행 방법 : `java -jar out/artifacts/server.jar`
 - 클라이언트 실행 방법 : `java -jar out/artifacts/client.jar`
+
+## Server 순서도
+![](server-diagram.svg)
+## Client 순서도
+![](client-diagram.svg)

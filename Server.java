@@ -91,7 +91,7 @@ public class Server {
                 }
             } catch (Exception e) {
                 System.out.println("[예외 발생] " + e.getMessage());
-                e.printStackTrace();
+                // e.printStackTrace();
             } finally {
                 try {
                     Print.stopWithClient(socket);

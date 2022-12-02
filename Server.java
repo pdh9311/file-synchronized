@@ -108,7 +108,7 @@ public class Server {
     }
 
     private static void fileAdd(Socket socket, SyncFileInfo sfi) throws IOException, ParseException {
-        System.out.println("---------- ADD ----------");
+        System.out.print("[ADD] ");
         System.out.println("file: " + Const.BACKUP_PATH + sfi.getPath());
         File file = Utils.createDirectoryAndFileAtServer(sfi.getParentPath(), sfi.getPath());
         Utils.recvFile(socket, file);
@@ -117,7 +117,7 @@ public class Server {
     }
 
     private static void fileModify(Socket socket, SyncFileInfo sfi) throws IOException, ParseException {
-        System.out.println("---------- MODIFY ----------");
+        System.out.print("[MODIFY] ");
         System.out.println("file: " + Const.BACKUP_PATH + sfi.getPath());
         File file = Utils.findFileAtServer(sfi.getPath());
         file.delete();
@@ -128,7 +128,7 @@ public class Server {
     }
 
     private static void fileDelete(SyncFileInfo sfi) {
-        System.out.println("---------- DELETE ----------");
+        System.out.print("[DELETE] ");
         System.out.println("file: " + Const.BACKUP_PATH + sfi.getPath());
         File file = Utils.findFileAtServer(sfi.getPath());
         file.delete();

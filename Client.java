@@ -130,14 +130,14 @@ public class Client {
                         continue;
                     }
                     if (sfi.getRequest().equals("ADD")) {
-                        System.out.println("---------- ADD ----------");
+                        System.out.print("[ADD] ");
                         System.out.println("file: " + Const.SYNC_PATH + sfi.getPath());
                         File file = Utils.createDirectoryAndFileAtClient(sfi.getParentPath(), sfi.getPath());
                         Utils.recvFile(socket, file);
                         Utils.setLastModifiedDate(sfi.getLastModifiedDate(), file);
                         prevMap.put(sfi.getPath(), sfi);
                     } else if (sfi.getRequest().equals("MODIFY")) {
-                        System.out.println("---------- MODIFY ----------");
+                        System.out.print("[MODIFY] ");
                         System.out.println("file: " + Const.SYNC_PATH + sfi.getPath());
                         File file = Utils.findFileAtClient(sfi.getPath());
                         file.delete();
@@ -146,7 +146,7 @@ public class Client {
                         Utils.recvFile(socket, file);
                         prevMap.put(sfi.getPath(), sfi);
                     } else if (sfi.getRequest().equals("DELETE")) {
-                        System.out.println("---------- DELETE ----------");
+                        System.out.print("[DELETE] ");
                         System.out.println("file: " + Const.SYNC_PATH + sfi.getPath());
                         File file = Utils.findFileAtClient(sfi.getPath());
                         file.delete();

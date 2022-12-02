@@ -58,7 +58,7 @@ public class Client {
                 Print.stopWithServer(socket);
                 socket.close();
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                System.out.println("[예외 발생] " + ex.getMessage());
             }
         }
 

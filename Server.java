@@ -19,8 +19,9 @@ public class Server {
             System.out.println("[" + Const.SERVER_PORT + " 포트에 연결할 수 없습니다.]");
         }
         System.out.println("[server] 시작");
-        try {
-            while (true) {
+
+        while (true) {
+            try {
                 // 클라이언트 연결 요청 기다림.
                 Socket socket = serverSocket.accept();
 
@@ -44,12 +45,11 @@ public class Server {
                 Utils.sendMsg(socket, "END");
                 thread.join();
 
+            } catch (IOException | InterruptedException e) {
+                System.out.println("[예외 발생] " + e.getMessage());
+                // e.printStackTrace();
             }
-        } catch (IOException | InterruptedException e) {
-            System.out.println("[예외 발생] " + e.getMessage());
-            e.printStackTrace();
         }
-
 
     }
 
@@ -59,11 +59,11 @@ public class Server {
             SyncFileInfo value = entry.getValue();
             SyncFileInfo info = clientMap.get(key);
             if (info == null) {     // [서버에만 파일이 있는 경우] 클라이언트에 데이터를 추가한다.
-                System.out.println("[서버에만 파일이 있는 경우] ");
+                System.out.print("[서버에만 파일이 있는 경우] ");
                 Utils.sendMsg(socket, value.toJson("ADD"));
                 Utils.sendFile(socket, Utils.findFileAtServer(value.getPath()));
             } else if (value.isModified(info)) {    // [서버, 클라이언트 둘 다 있지만 서버가 최신인 경우] 클라이언트에 데이터를 변경한다.
-                System.out.println("[서버, 클라이언트 둘 다 있지만 서버가 최신인 경우]");
+                System.out.print("[서버, 클라이언트 둘 다 있지만 서버가 최신인 경우] ");
                 Utils.sendMsg(socket, value.toJson("MODIFY"));
                 Utils.sendFile(socket, Utils.findFileAtServer(value.getPath()));
             }
@@ -97,7 +97,8 @@ public class Server {
                     Print.stopWithClient(socket);
                     socket.close();
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    System.out.println("[예외 발생] " + e.getMessage());
+                    // e.printStackTrace();
                 }
             }
 

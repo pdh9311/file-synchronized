@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +20,7 @@ public class Utils {
     }
 
     public static void sendMsg(Socket socket, String msg) throws IOException {
+        System.out.println("[send]" + msg);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         dos.writeUTF(msg);
         dos.flush();
@@ -28,7 +28,9 @@ public class Utils {
 
     public static String recvMsg(Socket socket) throws IOException {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        return dis.readUTF();
+        String msg = dis.readUTF();
+        System.out.println("[recv]" + msg);
+        return msg;
     }
 
     public static void sendFile(Socket socket, File file) throws IOException {

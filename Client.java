@@ -9,30 +9,35 @@ import java.util.Map;
 public class Client {
     private static Map<String, SyncFileInfo> prevMap = new HashMap<>();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
-        Socket socket = new Socket(Const.SERVER_NAME, Const.SERVER_PORT);
+        try {
+            Socket socket = new Socket(Const.SERVER_NAME, Const.SERVER_PORT);
 
-        Print.clientConnect(socket);
+            Print.clientConnect(socket);
 
-        // 특정 디렉토리 : ~/sync
-        AllFileDirSearch search = new AllFileDirSearch(Const.CLIENT_SYNC_DIR);
-        prevMap = search.getClientSyncFileInfos();
-        Print.MapStringSyncFileInfo(prevMap);
+            // 특정 디렉토리 : ~/sync
+            AllFileDirSearch search = new AllFileDirSearch(Const.CLIENT_SYNC_DIR);
+            prevMap = search.getClientSyncFileInfos();
+            Print.MapStringSyncFileInfo(prevMap);
 
-        // 서버의 현재 backup 되어있는 파일들의 정보를 가져온다.
-        Map<String, SyncFileInfo> serverMap = Utils.recvMapStringSyncFileInfo(socket);
+            // 서버의 현재 backup 되어있는 파일들의 정보를 가져온다.
+            Map<String, SyncFileInfo> serverMap = Utils.recvMapStringSyncFileInfo(socket);
 
-        // 처음 클라이언트에 sync 되어있는 파일들의 정보를 서버한테 보낸다.
-        Utils.sendMapStringSyncFileInfo(socket, prevMap);
+            // 처음 클라이언트에 sync 되어있는 파일들의 정보를 서버한테 보낸다.
+            Utils.sendMapStringSyncFileInfo(socket, prevMap);
 
-        // 서버로 부터 추가, 변경, 삭제에 대한 요청 감지
-        eventHandler(socket);
+            // 서버로 부터 추가, 변경, 삭제에 대한 요청 감지
+            eventHandler(socket);
 
-        clientFileCheck(socket, serverMap);
+            clientFileCheck(socket, serverMap);
 
-        // 클라이언트의 특정 디렉토리에서 파일의 추가, 변경, 삭제를 모니터링
-        clientMonitoring(socket);
+            // 클라이언트의 특정 디렉토리에서 파일의 추가, 변경, 삭제를 모니터링
+            clientMonitoring(socket);
+        } catch (IOException e) {
+            System.out.println("[예외 발생] " + e.getMessage());
+            // e.printStackTrace();
+        }
 
     }
 

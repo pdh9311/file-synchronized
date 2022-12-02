@@ -42,6 +42,7 @@ public class Server {
                 Thread thread = eventHandler(socket);
 
                 serverFileCheck(socket, clientMap);
+                Thread.sleep(5);
                 Utils.sendMsg(socket, "END");
                 thread.join();
 
@@ -89,7 +90,7 @@ public class Server {
                         fileDelete(sfi);
                     }
                 }
-            } catch (Exception e) {
+            } catch (IOException | ParseException e) {
                 System.out.println("[예외 발생] " + e.getMessage());
                 // e.printStackTrace();
             } finally {
